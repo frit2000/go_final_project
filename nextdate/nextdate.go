@@ -13,6 +13,9 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("ошибка парсинга формата заданной даты: %w", err)
 	}
+	if repeat == "" {
+		return "", fmt.Errorf("ошибка формата repeat, пустая строка")
+	}
 
 	// if date < now.Format("20060102") {
 	// 	date = now.Format("20060102")
@@ -34,6 +37,9 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 
 func addDays(now time.Time, dateInTimeFormat time.Time, repeat string) (string, error) {
 	daySlice := strings.Split(repeat, " ")
+	if len(daySlice) != 2 {
+		return "", fmt.Errorf("ошибка формата repeat, количество дней не задано")
+	}
 	//переводим в число параметр, на сколько дней надо перенести задачу
 	dayCount, err := strconv.Atoi(daySlice[1])
 	if err != nil {
@@ -44,6 +50,7 @@ func addDays(now time.Time, dateInTimeFormat time.Time, repeat string) (string, 
 	}
 
 	//устанавливаем новую дату для задачи
+	dateInTimeFormat = dateInTimeFormat.AddDate(0, 0, dayCount)
 	for dateInTimeFormat.Format("20060102") <= now.Format("20060102") {
 		dateInTimeFormat = dateInTimeFormat.AddDate(0, 0, dayCount)
 	}
@@ -53,6 +60,7 @@ func addDays(now time.Time, dateInTimeFormat time.Time, repeat string) (string, 
 
 func addYear(now time.Time, dateInTimeFormat time.Time) (string, error) {
 	//устанавливаем новую дату для задачи
+	dateInTimeFormat = dateInTimeFormat.AddDate(1, 0, 0)
 	for dateInTimeFormat.Format("20060102") <= now.Format("20060102") {
 		dateInTimeFormat = dateInTimeFormat.AddDate(1, 0, 0)
 	}
