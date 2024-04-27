@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -26,14 +25,17 @@ func DbExistance() {
 
 	if err != nil {
 		dbCreate()
+		log.Println("Создана новая база данных с таблицей scheduler")
+		return
 	}
+	log.Println("База данных уже существует")
+
 }
 
 func dbCreate() {
 	db, err := sql.Open("sqlite", "scheduler.db")
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println("ошибка при подключении к БД:", err)
 	}
 	defer db.Close()
 
@@ -43,16 +45,11 @@ func dbCreate() {
 											comment VARCHAR(256) NOT NULL DEFAULT "",
 											repeat VARCHAR(128))`)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println("ошибка при создании таблицы в БД:", err)
 	}
 
 	_, err = db.Exec("CREATE INDEX dateindex ON scheduler (date)")
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println("ошибка при создании индекса dateindex в БД:", err)
 	}
-
-	row := db.QueryRow("SELECT * FROM scheduler")
-
 }
