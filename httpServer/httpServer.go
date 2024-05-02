@@ -1,6 +1,7 @@
 package httpServer
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -40,7 +41,9 @@ func StartWebServer() {
 
 	r := chi.NewRouter()
 	r.Get("/api/nextdate", getNextDate)
-	r.Handle("/", http.FileServer(http.Dir(webDir)))
+	fmt.Println("path=", http.FileServer(http.Dir(webDir)))
+	//	r.Handle("/", http.FileServer(http.Dir(webDir)))
+	http.Handle("/", http.FileServer(http.Dir(webDir)))
 
 	log.Println("Запускаем веб сервер")
 	err := http.ListenAndServe(":"+todoPort, r)
