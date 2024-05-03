@@ -4,24 +4,25 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
 
 func DbExistance() {
-	appPath, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// appPath, err := os.Executable()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	// envFile := os.Getenv("TODO_DBFILE")
 	// if len(envFile) > 0 {
 	// 	fmt.Println("зашли в env")
 	// 	appPath = envFile
 	// }
 
-	dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
-	_, err = os.Stat(dbFile)
+	//dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
+	dbFile := "scheduler.db"
+	_, err := os.Stat(dbFile)
 
 	if err != nil {
 		dbCreate()

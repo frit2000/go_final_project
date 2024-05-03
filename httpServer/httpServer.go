@@ -4,31 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/frit2000/go_final_project/nextdate"
 	"github.com/go-chi/chi"
 )
-
-func getNextDate(w http.ResponseWriter, r *http.Request) {
-	//получаем параметры из запроса и переводим now в формат времени
-	nowInString := r.FormValue("now")
-	now, err := time.Parse("20060102", nowInString)
-	if err != nil {
-		log.Println("ошибка парсинга формата заданной даты:", err)
-	}
-	date := r.FormValue("date")
-	repeat := r.FormValue("repeat")
-
-	// получаем новую дату
-	s, err := nextdate.NextDate(now, date, repeat)
-	if err != nil {
-		log.Println("ошибка при переносе даты:", err)
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(s))
-}
 
 func StartWebServer() {
 
@@ -41,6 +19,7 @@ func StartWebServer() {
 	r := chi.NewRouter()
 	r.Get("/api/nextdate", getNextDate)
 	r.Handle("/", http.FileServer(http.Dir(webDir)))
+	r.Post("/api/task", addTask)
 
 	log.Println("Запускаем веб сервер")
 	err := http.ListenAndServe(":"+todoPort, r)
