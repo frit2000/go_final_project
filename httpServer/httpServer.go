@@ -18,7 +18,7 @@ func StartWebServer() {
 
 	r := chi.NewRouter()
 	r.Get("/api/nextdate", getNextDate)
-	r.Handle("/", http.FileServer(http.Dir(webDir)))
+	r.Handle("/*", http.FileServer(http.Dir(webDir)))
 	r.Post("/api/task", addTask)
 
 	log.Println("Запускаем веб сервер")
