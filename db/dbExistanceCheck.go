@@ -41,9 +41,9 @@ func dbCreate() {
 	defer db.Close()
 
 	_, err = db.Exec(`CREATE TABLE scheduler (id INTEGER PRIMARY KEY AUTOINCREMENT,	
-											date CHAR(8) NOT NULL DEFAULT "", 
+											date CHAR(8), 
 											title VARCHAR(128) NOT NULL DEFAULT "", 
-											comment VARCHAR(256) NOT NULL DEFAULT "",
+											comment VARCHAR(256) ,
 											repeat VARCHAR(128))`)
 	if err != nil {
 		log.Println("ошибка при создании таблицы в БД:", err)
