@@ -12,18 +12,6 @@ import (
 	"github.com/frit2000/go_final_project/nextdate"
 )
 
-type Task struct {
-	Date    string `json:"date"`
-	Title   string `json:"title"`
-	Comment string `json:"comment"`
-	Repeat  string `json:"repeat,omitempty"`
-}
-
-type RespTaskAdd struct {
-	Id  int64 `json:"id,omitempty"`
-	Err error `json:"error,omitempty"`
-}
-
 func addTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	var task Task
@@ -41,7 +29,7 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// проверяем что все поля task валидные
+	// проверяем что все поля date и title в task валидные
 	err = checkFieldsTask(&task)
 	if err != nil {
 		respTaskAdd.Err = err
@@ -73,7 +61,6 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-	//	fmt.Println("id=", id, "resp=", resp)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write(resp)
@@ -100,7 +87,6 @@ func checkFieldsTask(task *Task) error {
 	}
 
 	if task.Date < time.Now().Format("20060102") {
-		//	log.Println("дата таски", task.Date, "меньше сегодняшней", newDate)
 		task.Date = newDate
 	}
 
