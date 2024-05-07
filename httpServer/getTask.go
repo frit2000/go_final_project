@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 func getTask(w http.ResponseWriter, r *http.Request) {
@@ -19,9 +20,29 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 		log.Println("ошибка при подключении к БД:", err)
 	}
 	defer db.Close()
+	//если нажат поиск, то выбираем записи согласно строке поиска
+	searchString := r.FormValue("search")
+	var rows *sql.Rows
+	if searchString != "" {
+		searchDate, errParse := time.Parse("02.01.2006", searchString)
+		//если в поиске дата
+		if errParse == nil {
+			rows, err = db.Query("SELECT * FROM scheduler WHERE date = :searchString",
+				sql.Named("searchString", searchDate.Format("20060102")),
+				sql.Named("limit", 15))
+			//если в поиске НЕ дата
+		} else {
+			rows, err = db.Query("SELECT * FROM scheduler WHERE title LIKE :searchString OR comment LIKE :searchString ORDER BY date LIMIT :limit",
+				sql.Named("searchString", "%"+searchString+"%"),
+				sql.Named("limit", 15))
+		}
 
-	//запрос в базу на получение данных из таблицы
-	rows, err := db.Query("SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date")
+		//если НЕ нажат поиск, то выбираем все записи
+	} else {
+		rows, err = db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit",
+			sql.Named("limit", 15))
+	}
+
 	if err != nil {
 		log.Println("Ошибка запроса в базу:", err)
 		return
