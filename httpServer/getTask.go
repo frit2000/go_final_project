@@ -13,16 +13,16 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 		"tasks": {},
 	}
 	var task Task
-
+	var rows *sql.Rows
 	// подключаемся к БД
 	db, err := sql.Open("sqlite", "scheduler.db")
 	if err != nil {
 		log.Println("ошибка при подключении к БД:", err)
 	}
 	defer db.Close()
+
 	//если нажат поиск, то выбираем записи согласно строке поиска
 	searchString := r.FormValue("search")
-	var rows *sql.Rows
 	if searchString != "" {
 		searchDate, errParse := time.Parse("02.01.2006", searchString)
 		//если в поиске дата

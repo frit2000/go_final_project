@@ -8,7 +8,7 @@ type Task struct {
 	Repeat  string `json:"repeat,omitempty"`
 }
 
-type RespTaskAdd struct {
-	Id  int64 `json:"id,omitempty"`
-	Err error `json:"error,omitempty"`
+type RespTaskError struct {
+	Id  string `json:"id,omitempty"`
+	Err string `json:"error,omitempty"`
 }

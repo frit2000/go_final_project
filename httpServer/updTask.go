@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 )
 
-func addTask(w http.ResponseWriter, r *http.Request) {
+func updTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	var task Task
 	var respTaskAdd RespTaskError
+	var count int
 
 	// получаем данные из веб-интерфейса
 	_, err := buf.ReadFrom(r.Body)
@@ -31,6 +31,7 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
+
 	// подключаемся к БД
 	db, err := sql.Open("sqlite", "scheduler.db")
 	if err != nil {
@@ -38,28 +39,30 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	//записываем поля структуры task в БД
-	res, err := db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
+	//проверяем, есть ли такой ID задачи
+	err = db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
+	if err != nil {
+		log.Println("ошибка чтении данных из БД:", err)
+	}
+	if count == 0 {
+		respTaskAdd.Err = "задача не найдена"
+		resp, err := json.Marshal(&respTaskAdd)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write(resp)
+	}
+	//обновляем поля структуры task в БД
+	_, err = db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
 		sql.Named("date", task.Date),
 		sql.Named("title", task.Title),
 		sql.Named("comment", task.Comment),
-		sql.Named("repeat", task.Repeat))
+		sql.Named("repeat", task.Repeat),
+		sql.Named("id", task.Id))
 	if err != nil {
 		log.Println("ошибка при добавлении записи БД:", err)
 	}
 
-	//получаем ID последней добавленной записи
-	lastID, err := res.LastInsertId()
-	if err != nil {
-		log.Println("ошибка получении последнего ID:", err)
-	}
-	respTaskAdd.Id = strconv.Itoa(int(lastID))
-
-	resp, err := json.Marshal(&respTaskAdd)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
 }
