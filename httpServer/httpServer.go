@@ -22,6 +22,7 @@ func StartWebServer() {
 	r.Post("/api/task", addTask)
 	r.Post("/api/task/done", doneTask)
 	r.Get("/api/task", getOneTask)
+	r.Delete("/api/task", delTask)
 	r.Put("/api/task", updTask)
 	r.Get("/api/tasks", getTask)
 
