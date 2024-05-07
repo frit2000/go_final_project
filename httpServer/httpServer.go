@@ -20,6 +20,7 @@ func StartWebServer() {
 	r.Get("/api/nextdate", getNextDate)
 	r.Handle("/*", http.FileServer(http.Dir(webDir)))
 	r.Post("/api/task", addTask)
+	r.Post("/api/task/done", doneTask)
 	r.Get("/api/task", getOneTask)
 	r.Put("/api/task", updTask)
 	r.Get("/api/tasks", getTask)

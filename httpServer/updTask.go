@@ -46,13 +46,6 @@ func updTask(w http.ResponseWriter, r *http.Request) {
 	}
 	if count == 0 {
 		respTaskAdd.Err = "задача не найдена"
-		resp, err := json.Marshal(&respTaskAdd)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write(resp)
 	}
 	//обновляем поля структуры task в БД
 	_, err = db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
@@ -62,7 +55,13 @@ func updTask(w http.ResponseWriter, r *http.Request) {
 		sql.Named("repeat", task.Repeat),
 		sql.Named("id", task.Id))
 	if err != nil {
-		log.Println("ошибка при добавлении записи БД:", err)
+		log.Println("ошибка при обновлении записи БД:", err)
 	}
-
+	resp, err := json.Marshal(&respTaskAdd)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
 }

@@ -22,7 +22,11 @@ func getOneTask(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
 		log.Println("ошибка чтении данных по id:", err)
-		respTask.Err = "Задача не найдена"
+	}
+
+	//проверяем, есть ли такой ID задачи
+	if len(task.Id) == 0 {
+		respTask.Err = "Ошибка, нет такого ID"
 	}
 
 	if respTask.Err == "" {
