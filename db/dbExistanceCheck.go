@@ -4,37 +4,39 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
 
 func DbExistance() {
-	// appPath, err := os.Executable()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	appPath, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
 
-	// envFile := os.Getenv("TODO_DBFILE")
-	// if len(envFile) > 0 {
-	// 	fmt.Println("зашли в env")
-	// 	appPath = envFile
-	// }
+	os.Setenv("TODO_DBFILE", ".\\db")
 
-	//dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
-	dbFile := "scheduler.db"
-	_, err := os.Stat(dbFile)
+	envFile := os.Getenv("TODO_DBFILE")
+	if len(envFile) > 0 {
+		dbFile = filepath.Join(envFile, "scheduler.db")
+	}
+
+	log.Println("путь к БД:", dbFile)
+	_, err = os.Stat(dbFile)
 
 	if err != nil {
-		dbCreate()
-		log.Println("Создана новая база данных с таблицей scheduler")
+		log.Println("Создаем новую базу данных с таблицей scheduler")
+		dbCreate(dbFile)
 		return
 	}
 	log.Println("База данных уже существует")
 
 }
 
-func dbCreate() {
-	db, err := sql.Open("sqlite", "scheduler.db")
+func dbCreate(dbFile string) {
+	db, err := sql.Open("sqlite", dbFile)
 	if err != nil {
 		log.Println("ошибка при подключении к БД:", err)
 	}
