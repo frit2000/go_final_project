@@ -10,13 +10,7 @@ import (
 )
 
 func DbExistance() {
-	// appPath, err := os.Executable()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	dbFile := "scheduler.db"
-
-	//	os.Setenv("TODO_DBFILE", "..")
 
 	envFile := os.Getenv("TODO_DBFILE")
 	if len(envFile) > 0 {
