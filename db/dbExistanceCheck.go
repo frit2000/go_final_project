@@ -10,13 +10,13 @@ import (
 )
 
 func DbExistance() {
-	appPath, err := os.Executable()
-	if err != nil {
-		log.Fatal(err)
-	}
-	dbFile := filepath.Join(filepath.Dir(appPath), "scheduler.db")
+	// appPath, err := os.Executable()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	dbFile := "scheduler.db"
 
-	os.Setenv("TODO_DBFILE", ".\\db")
+	//	os.Setenv("TODO_DBFILE", "..")
 
 	envFile := os.Getenv("TODO_DBFILE")
 	if len(envFile) > 0 {
@@ -24,7 +24,7 @@ func DbExistance() {
 	}
 
 	log.Println("путь к БД:", dbFile)
-	_, err = os.Stat(dbFile)
+	_, err := os.Stat(dbFile)
 
 	if err != nil {
 		log.Println("Создаем новую базу данных с таблицей scheduler")

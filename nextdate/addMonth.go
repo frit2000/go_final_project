@@ -123,22 +123,22 @@ func setDateForSpecificMonths(validDays map[int]string, validMonths map[int]stri
 		if fmt.Sprintf("%02s", validMonth) < dateInTimeFormat.Format("01") {
 			for i, validDay := range validDays {
 				addYear = true
-				resultDate[i+j] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
+				resultDate[i+j*100] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
 			}
 		} else if fmt.Sprintf("%02s", validMonth) == dateInTimeFormat.Format("01") {
 			for i, validDay := range validDays {
 				if fmt.Sprintf("%02s", validDay) > dateInTimeFormat.Format("02") {
 					addYear = false
-					resultDate[i+j] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
+					resultDate[i+j*100] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
 				} else {
 					addYear = true
-					resultDate[i+j] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
+					resultDate[i+j*100] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
 				}
 			}
 		} else {
 			for i, validDay := range validDays {
 				addYear = false
-				resultDate[i+j] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
+				resultDate[i+j*100] = dateFormat(dateInTimeFormat, validMonth, validDay, addYear)
 			}
 		}
 
