@@ -92,9 +92,9 @@ func setDateFromCurrentMonth(validDays map[int]string, dateInTimeFormat time.Tim
 		if ok {
 			if (i <= int(dateInTimeFormat.Day())) || (i > amountOfDaysInMonth) {
 				varDate := dateInTimeFormat.AddDate(0, 1, 0)
-				validDays[i] = varDate.Format(dFormat) + fmt.Sprintf("%02d", i)
+				validDays[i] = varDate.Format("200601") + fmt.Sprintf("%02d", i)
 			} else {
-				validDays[i] = dateInTimeFormat.Format(dFormat) + fmt.Sprintf("%02d", i)
+				validDays[i] = dateInTimeFormat.Format("200601") + fmt.Sprintf("%02d", i)
 			}
 		}
 	}
