@@ -10,7 +10,7 @@ import (
 // определяем флаги
 func SetFlagParams() {
 	pass := flag.String("password", "", "Пароль для приложения")
-	port := flag.String("port", "7540", "Путь к базе данных")
+	port := flag.String("port", "7540", "Порт для запуска веб сервера")
 	dbPath := flag.String("dbpath", "", "Путь к базе данных")
 
 	flag.Parse()

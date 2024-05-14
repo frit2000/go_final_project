@@ -15,30 +15,6 @@ var AuthResult AuthPassError
 var buf bytes.Buffer
 var auth AuthPass
 
-//const pass = "12345678"
-
-func Auth(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var jwt string // JWT-токен из куки
-		// смотрим наличие пароля
-		pass := env.SetPass()
-		if len(pass) > 0 {
-			// получаем куку
-			cookie, err := r.Cookie("token")
-			if err == nil {
-				jwt = cookie.Value
-			}
-
-			if jwt != AuthResult.MyTocken {
-				// возвращаем ошибку авторизации 401
-				http.Error(w, "Authentification required", http.StatusUnauthorized)
-				return
-			}
-		}
-		next(w, r)
-	})
-}
-
 func checkPass(w http.ResponseWriter, r *http.Request) {
 
 	//получить данные от запроса
@@ -79,4 +55,26 @@ func checkPass(w http.ResponseWriter, r *http.Request) {
 		log.Println("Не удалось записать данные в html:", err)
 	}
 
+}
+
+func Auth(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var jwt string // JWT-токен из куки
+		// смотрим наличие пароля
+		pass := env.SetPass()
+		if len(pass) > 0 {
+			// получаем куку
+			cookie, err := r.Cookie("token")
+			if err == nil {
+				jwt = cookie.Value
+			}
+
+			if jwt != AuthResult.MyTocken {
+				// возвращаем ошибку авторизации 401
+				http.Error(w, "Authentification required", http.StatusUnauthorized)
+				return
+			}
+		}
+		next(w, r)
+	})
 }
