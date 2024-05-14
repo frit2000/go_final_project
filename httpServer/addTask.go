@@ -46,17 +46,19 @@ func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 	lastID, err := res.LastInsertId()
 	if err != nil {
 		log.Println("ошибка получении последнего ID:", err)
+
 	}
 	respTaskAdd.Id = strconv.Itoa(int(lastID))
 
 	resp, err := json.Marshal(&respTaskAdd)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if _, err = w.Write(resp); err != nil {
-		log.Println("Не удалось записать данные в html:", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 }

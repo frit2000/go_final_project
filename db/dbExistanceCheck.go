@@ -23,8 +23,7 @@ func DbExistance() error {
 			return fmt.Errorf("ошибка создания новой базы: %w", err)
 		}
 	}
-	return fmt.Errorf("база данных уже существует: %w", nil)
-	//			log.Println("База данных уже существует")
+	return fmt.Errorf("база данных уже существует")
 }
 
 func dbCreate(dbFile string) error {

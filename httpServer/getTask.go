@@ -3,7 +3,6 @@ package httpServer
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 )
@@ -17,28 +16,6 @@ func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	const limit = 15
-
-	// //если нажат поиск, то выбираем записи согласно строке поиска
-	// searchString := r.FormValue("search")
-	// if searchString != "" {
-	// 	searchDate, errParse := time.Parse("02.01.2006", searchString)
-	// 	//если в поиске дата
-	// 	if errParse == nil {
-	// 		rows, err = t.db.Query("SELECT * FROM scheduler WHERE date = :searchString LIMIT :limit",
-	// 			sql.Named("searchString", searchDate.Format("20060102")),
-	// 			sql.Named("limit", limit))
-	// 		//если в поиске НЕ дата
-	// 	} else {
-	// 		rows, err = t.db.Query("SELECT * FROM scheduler WHERE title LIKE :searchString OR comment LIKE :searchString ORDER BY date LIMIT :limit",
-	// 			sql.Named("searchString", "%"+searchString+"%"),
-	// 			sql.Named("limit", limit))
-	// 	}
-
-	// 	//если НЕ нажат поиск, то выбираем все записи
-	// } else {
-	// 	rows, err = t.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit",
-	// 		sql.Named("limit", limit))
-	// }
 
 	searchString := r.FormValue("search")
 
@@ -65,7 +42,8 @@ func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
 
 	//если в процессе любого из поисков возникла ошибка, логируем
 	if err != nil {
-		log.Println("Ошибка запроса в базу:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		//log.Println("Ошибка запроса в базу:", err)
 		return
 	}
 	defer rows.Close()
@@ -85,14 +63,14 @@ func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := json.Marshal(&tasks)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if _, err = w.Write(resp); err != nil {
-		log.Println("Не удалось записать данные в html:", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

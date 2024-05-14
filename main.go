@@ -13,7 +13,7 @@ func main() {
 
 	err := db.DbExistance()
 	if err != nil {
-		log.Println("Ошибка с базой ", err)
+		log.Println("При подключении к базе:", err)
 	}
 
 	httpServer.StartWebServer()

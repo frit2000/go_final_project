@@ -43,5 +43,4 @@ func StartWebServer() {
 	if err != nil {
 		log.Println("ошибка при запуске веб сервера:", err)
 	}
-	log.Println("Веб сервер запущен")
 }

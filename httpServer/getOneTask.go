@@ -29,14 +29,14 @@ func (t TaskStore) getOneTask(w http.ResponseWriter, r *http.Request) {
 		resp, err = json.Marshal(&respTask)
 	}
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if _, err = w.Write(resp); err != nil {
-		log.Println("Не удалось записать данные в html:", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 }

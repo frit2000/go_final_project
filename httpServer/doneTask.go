@@ -51,7 +51,7 @@ func (t TaskStore) doneTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if _, err = w.Write(resp); err != nil {
-		log.Println("Не удалось записать данные в html:", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 }
