@@ -7,19 +7,19 @@ import (
 	"net/http"
 )
 
-func getOneTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) getOneTask(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	var respTask RespTaskError
 	var resp []byte
 	id := r.FormValue("id")
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
-	err = db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+	err := t.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
 		log.Println("ошибка чтении данных по id:", err)
 	}

@@ -8,18 +8,19 @@ import (
 	"time"
 )
 
-func getTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
 	var tasks = map[string][]Task{
 		"tasks": {},
 	}
 	var task Task
 	var rows *sql.Rows
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	var err error
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
 	//если нажат поиск, то выбираем записи согласно строке поиска
 	searchString := r.FormValue("search")
@@ -27,19 +28,19 @@ func getTask(w http.ResponseWriter, r *http.Request) {
 		searchDate, errParse := time.Parse("02.01.2006", searchString)
 		//если в поиске дата
 		if errParse == nil {
-			rows, err = db.Query("SELECT * FROM scheduler WHERE date = :searchString",
+			rows, err = t.db.Query("SELECT * FROM scheduler WHERE date = :searchString",
 				sql.Named("searchString", searchDate.Format("20060102")),
 				sql.Named("limit", 15))
 			//если в поиске НЕ дата
 		} else {
-			rows, err = db.Query("SELECT * FROM scheduler WHERE title LIKE :searchString OR comment LIKE :searchString ORDER BY date LIMIT :limit",
+			rows, err = t.db.Query("SELECT * FROM scheduler WHERE title LIKE :searchString OR comment LIKE :searchString ORDER BY date LIMIT :limit",
 				sql.Named("searchString", "%"+searchString+"%"),
 				sql.Named("limit", 15))
 		}
 
 		//если НЕ нажат поиск, то выбираем все записи
 	} else {
-		rows, err = db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit",
+		rows, err = t.db.Query("SELECT * FROM scheduler ORDER BY date LIMIT :limit",
 			sql.Named("limit", 15))
 	}
 

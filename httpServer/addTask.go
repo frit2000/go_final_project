@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func addTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	var task Task
 	var respTaskAdd RespTaskError
@@ -31,15 +31,15 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
 	//записываем поля структуры task в БД
-	res, err := db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
+	res, err := t.db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
 		sql.Named("date", task.Date),
 		sql.Named("title", task.Title),
 		sql.Named("comment", task.Comment),

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func updTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
 	var task Task
 	var respTaskAdd RespTaskError
@@ -32,15 +32,15 @@ func updTask(w http.ResponseWriter, r *http.Request) {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
 
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
 	//проверяем, есть ли такой ID задачи
-	err = db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
+	err = t.db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
 	if err != nil {
 		log.Println("ошибка чтении данных из БД:", err)
 	}
@@ -48,7 +48,7 @@ func updTask(w http.ResponseWriter, r *http.Request) {
 		respTaskAdd.Err = "задача не найдена"
 	}
 	//обновляем поля структуры task в БД
-	_, err = db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
+	_, err = t.db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
 		sql.Named("date", task.Date),
 		sql.Named("title", task.Title),
 		sql.Named("comment", task.Comment),

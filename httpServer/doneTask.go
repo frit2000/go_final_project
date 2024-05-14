@@ -10,20 +10,20 @@ import (
 	"github.com/frit2000/go_final_project/nextdate"
 )
 
-func doneTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) doneTask(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	var respTask RespTaskError
 
 	id := r.FormValue("id")
 
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
-	err = db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
+	err := t.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
 		log.Println("ошибка чтении данных по id:", err)
 	}
@@ -34,7 +34,7 @@ func doneTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if task.Repeat == "" {
-		_, err = db.Exec("DELETE FROM scheduler WHERE id = :id", sql.Named("id", id))
+		_, err = t.db.Exec("DELETE FROM scheduler WHERE id = :id", sql.Named("id", id))
 		if err != nil {
 			log.Println("ошибка при обновлении записи БД:", err)
 		}
@@ -43,7 +43,7 @@ func doneTask(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("ошибка при вычислении новой даты", err)
 		}
-		_, err = db.Exec("UPDATE scheduler SET date = :date WHERE id = :id",
+		_, err = t.db.Exec("UPDATE scheduler SET date = :date WHERE id = :id",
 			sql.Named("date", newDate),
 			sql.Named("id", task.Id))
 		if err != nil {

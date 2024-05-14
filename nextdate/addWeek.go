@@ -28,7 +28,7 @@ func addWeek(now time.Time, dateInTimeFormat time.Time, repeat string) (string, 
 	}
 
 	//проверяем, что считаем от даты которая дальше чем сегодня, иначе считаем с сегодня
-	if dateInTimeFormat.Format("20060102") < now.Format("20060102") {
+	if dateInTimeFormat.Format(dFormat) < now.Format(dFormat) {
 		dateInTimeFormat = now
 	}
 
@@ -38,11 +38,11 @@ func addWeek(now time.Time, dateInTimeFormat time.Time, repeat string) (string, 
 		weekDay := weekDayNumber(dateInTimeFormat)
 		_, ok := validDays[weekDay]
 		if ok {
-			validDays[weekDay] = dateInTimeFormat.Format("20060102")
+			validDays[weekDay] = dateInTimeFormat.Format(dFormat)
 		}
 	}
 	//ищем ближайшую дату из мапы
-	targetDay := dateInTimeFormat.Format("20060102")
+	targetDay := dateInTimeFormat.Format(dFormat)
 	for _, validDay := range validDays {
 		if validDay < targetDay {
 			targetDay = validDay

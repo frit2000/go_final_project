@@ -5,9 +5,11 @@ import (
 	"time"
 )
 
+const dFormat = "20060102"
+
 func NextDate(now time.Time, date string, repeat string) (string, error) {
 
-	dateInTimeFormat, err := time.Parse("20060102", date)
+	dateInTimeFormat, err := time.Parse(dFormat, date)
 	if err != nil {
 		return "", fmt.Errorf("ошибка парсинга формата заданной даты: %w", err)
 	}

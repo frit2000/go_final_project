@@ -7,20 +7,20 @@ import (
 	"net/http"
 )
 
-func delTask(w http.ResponseWriter, r *http.Request) {
+func (t TaskStore) delTask(w http.ResponseWriter, r *http.Request) {
 	var checkedID string
 	var respTask RespTaskError
 
 	id := r.FormValue("id")
 
-	// подключаемся к БД
-	db, err := sql.Open("sqlite", "scheduler.db")
-	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
-	}
-	defer db.Close()
+	// // подключаемся к БД
+	// db, err := sql.Open("sqlite", "scheduler.db")
+	// if err != nil {
+	// 	log.Println("ошибка при подключении к БД:", err)
+	// }
+	// defer db.Close()
 
-	err = db.QueryRow("SELECT id FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&checkedID)
+	err := t.db.QueryRow("SELECT id FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&checkedID)
 	if err != nil {
 		log.Println("ошибка чтении данных по id:", err)
 	}
@@ -30,7 +30,7 @@ func delTask(w http.ResponseWriter, r *http.Request) {
 		respTask.Err = "Ошибка, нет такого ID"
 	}
 
-	_, err = db.Exec("DELETE FROM scheduler WHERE id = :id", sql.Named("id", id))
+	_, err = t.db.Exec("DELETE FROM scheduler WHERE id = :id", sql.Named("id", id))
 	if err != nil {
 		log.Println("ошибка при обновлении записи БД:", err)
 	}

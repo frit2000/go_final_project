@@ -24,9 +24,9 @@ func addDays(now time.Time, dateInTimeFormat time.Time, repeat string) (string, 
 
 	//устанавливаем новую дату для задачи
 	dateInTimeFormat = dateInTimeFormat.AddDate(0, 0, dayCount)
-	for dateInTimeFormat.Format("20060102") <= now.Format("20060102") {
+	for dateInTimeFormat.Format(dFormat) <= now.Format(dFormat) {
 		dateInTimeFormat = dateInTimeFormat.AddDate(0, 0, dayCount)
 	}
 
-	return dateInTimeFormat.Format("20060102"), nil
+	return dateInTimeFormat.Format(dFormat), nil
 }

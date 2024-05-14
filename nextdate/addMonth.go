@@ -38,7 +38,7 @@ func addMonth(now time.Time, dateInTimeFormat time.Time, repeat string) (string,
 	}
 
 	//проверяем, что считаем от даты которая дальше чем сегодня, иначе считаем с сегодня
-	if dateInTimeFormat.Format("20060102") < now.Format("20060102") {
+	if dateInTimeFormat.Format(dFormat) < now.Format(dFormat) {
 		dateInTimeFormat = now
 	}
 
@@ -92,23 +92,20 @@ func setDateFromCurrentMonth(validDays map[int]string, dateInTimeFormat time.Tim
 		if ok {
 			if (i <= int(dateInTimeFormat.Day())) || (i > amountOfDaysInMonth) {
 				varDate := dateInTimeFormat.AddDate(0, 1, 0)
-				validDays[i] = varDate.Format("200601") + fmt.Sprintf("%02d", i)
+				validDays[i] = varDate.Format(dFormat) + fmt.Sprintf("%02d", i)
 			} else {
-				validDays[i] = dateInTimeFormat.Format("200601") + fmt.Sprintf("%02d", i)
+				validDays[i] = dateInTimeFormat.Format(dFormat) + fmt.Sprintf("%02d", i)
 			}
 		}
 	}
 
 	if _, ok := validDays[-1]; ok {
-		validDays[-1] = dateInTimeFormat.AddDate(0, 1, -dateInTimeFormat.Day()).Format("20060102")
-		//		fmt.Println("-1, validdays=", validDays[-1])
+		validDays[-1] = dateInTimeFormat.AddDate(0, 1, -dateInTimeFormat.Day()).Format(dFormat)
 	}
 
 	if _, ok := validDays[-2]; ok {
-		validDays[-2] = dateInTimeFormat.AddDate(0, 1, -dateInTimeFormat.Day()-1).Format("20060102")
-		//		fmt.Println("-2, validdays=", validDays[-2])
+		validDays[-2] = dateInTimeFormat.AddDate(0, 1, -dateInTimeFormat.Day()-1).Format(dFormat)
 	}
-	//	fmt.Println("validDays=", validDays)
 
 	//возвращаем ближайшую дату из мапы
 	return minDate(validDays), nil
@@ -149,7 +146,7 @@ func setDateForSpecificMonths(validDays map[int]string, validMonths map[int]stri
 
 // поиск минимально значения в мапе с подходящими датами
 func minDate(validDays map[int]string) string {
-	targetDay := time.Now().AddDate(2, 0, 0).Format("20060102")
+	targetDay := time.Now().AddDate(2, 0, 0).Format(dFormat)
 	for _, validDay := range validDays {
 		if (validDay < targetDay) && (validDay != "") {
 			targetDay = validDay
