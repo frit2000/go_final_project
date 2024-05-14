@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/frit2000/go_final_project/env"
 	"github.com/go-chi/chi"
 )
 
@@ -24,10 +24,7 @@ func StartWebServer() {
 
 	store := NewTaskStore(db)
 
-	todoPort := os.Getenv("TODO_PORT")
-	if todoPort == "" {
-		todoPort = "7540"
-	}
+	todoPort := env.SetPort()
 	webDir := "web"
 
 	r := chi.NewRouter()

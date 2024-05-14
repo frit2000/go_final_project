@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/frit2000/go_final_project/env"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -14,21 +15,19 @@ var AuthResult AuthPassError
 var buf bytes.Buffer
 var auth AuthPass
 
+//const pass = "12345678"
+
 func Auth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var jwt string // JWT-токен из куки
 		// смотрим наличие пароля
-		pass := os.Getenv("TODO_PASSWORD")
+		pass := env.SetPass()
 		if len(pass) > 0 {
-			var jwt string // JWT-токен из куки
 			// получаем куку
 			cookie, err := r.Cookie("token")
 			if err == nil {
 				jwt = cookie.Value
 			}
-
-			// var valid bool
-			// if jwt == JwtToken
-			// // ...
 
 			if jwt != AuthResult.MyTocken {
 				// возвращаем ошибку авторизации 401
@@ -41,8 +40,6 @@ func Auth(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func checkPass(w http.ResponseWriter, r *http.Request) {
-
-	os.Setenv("TODO_PASSWORD", "12345678")
 
 	//получить данные от запроса
 	_, err := buf.ReadFrom(r.Body)
