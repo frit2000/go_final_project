@@ -32,13 +32,6 @@ func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
 
-	// // подключаемся к БД
-	// db, err := sql.Open("sqlite", "scheduler.db")
-	// if err != nil {
-	// 	log.Println("ошибка при подключении к БД:", err)
-	// }
-	// defer db.Close()
-
 	//проверяем, есть ли такой ID задачи
 	err = t.db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
 	if err != nil {
@@ -57,11 +50,17 @@ func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("ошибка при обновлении записи БД:", err)
 	}
+
+	//	rowsAffected, err := result.RowsAffected()
+
 	resp, err := json.Marshal(&respTaskAdd)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	if _, err = w.Write(resp); err != nil {
+		log.Println("Не удалось записать данные в html:", err)
+		return
+	}
 }

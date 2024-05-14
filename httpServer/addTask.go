@@ -31,12 +31,6 @@ func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
-	// // подключаемся к БД
-	// db, err := sql.Open("sqlite", "scheduler.db")
-	// if err != nil {
-	// 	log.Println("ошибка при подключении к БД:", err)
-	// }
-	// defer db.Close()
 
 	//записываем поля структуры task в БД
 	res, err := t.db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
@@ -61,5 +55,8 @@ func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	if _, err = w.Write(resp); err != nil {
+		log.Println("Не удалось записать данные в html:", err)
+		return
+	}
 }

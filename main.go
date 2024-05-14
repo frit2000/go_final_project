@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/frit2000/go_final_project/db"
 	"github.com/frit2000/go_final_project/env"
 	"github.com/frit2000/go_final_project/httpServer"
@@ -8,6 +10,11 @@ import (
 
 func main() {
 	env.SetFlagParams()
-	db.DbExistance()
+
+	err := db.DbExistance()
+	if err != nil {
+		log.Println("Ошибка с базой ", err)
+	}
+
 	httpServer.StartWebServer()
 }

@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,30 +11,26 @@ import (
 	"github.com/frit2000/go_final_project/env"
 )
 
-func DbExistance() {
-	// dbFile := "scheduler.db"
-
-	// envFile := os.Getenv("TODO_DBFILE")
-	// if len(envFile) > 0 {
-	// 	dbFile = filepath.Join(envFile, "scheduler.db")
-	// }
-
-	// log.Println("путь к БД:", dbFile)
+func DbExistance() error {
 
 	dbFile := env.DbName()
+
 	_, err := os.Stat(dbFile)
 	if err != nil {
 		log.Println("Создаем новую базу данных с таблицей scheduler")
-		dbCreate(dbFile)
-		return
+		err = dbCreate(dbFile)
+		if err != nil {
+			return fmt.Errorf("ошибка создания новой базы: %w", err)
+		}
 	}
-	log.Println("База данных уже существует")
+	return fmt.Errorf("база данных уже существует: %w", nil)
+	//			log.Println("База данных уже существует")
 }
 
-func dbCreate(dbFile string) {
+func dbCreate(dbFile string) error {
 	db, err := sql.Open("sqlite", dbFile)
 	if err != nil {
-		log.Println("ошибка при подключении к БД:", err)
+		return fmt.Errorf("ошибка при подключении к БД: %w", err)
 	}
 	defer db.Close()
 
@@ -43,11 +40,13 @@ func dbCreate(dbFile string) {
 											comment VARCHAR(256) ,
 											repeat VARCHAR(128))`)
 	if err != nil {
-		log.Println("ошибка при создании таблицы в БД:", err)
+		return fmt.Errorf("ошибка при создании таблицы в БД: %w", err)
 	}
 
 	_, err = db.Exec("CREATE INDEX dateindex ON scheduler (date)")
 	if err != nil {
-		log.Println("ошибка при создании индекса dateindex в БД:", err)
+		return fmt.Errorf("ошибка при создании индекса dateindex в БД: %w", err)
 	}
+
+	return nil
 }

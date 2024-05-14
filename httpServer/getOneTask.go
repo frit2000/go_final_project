@@ -12,12 +12,6 @@ func (t TaskStore) getOneTask(w http.ResponseWriter, r *http.Request) {
 	var respTask RespTaskError
 	var resp []byte
 	id := r.FormValue("id")
-	// // подключаемся к БД
-	// db, err := sql.Open("sqlite", "scheduler.db")
-	// if err != nil {
-	// 	log.Println("ошибка при подключении к БД:", err)
-	// }
-	// defer db.Close()
 
 	err := t.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
@@ -41,5 +35,8 @@ func (t TaskStore) getOneTask(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(resp)
+	if _, err = w.Write(resp); err != nil {
+		log.Println("Не удалось записать данные в html:", err)
+		return
+	}
 }
