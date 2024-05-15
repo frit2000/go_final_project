@@ -1,10 +1,12 @@
-package httpServer
+package server
 
 import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/frit2000/go_final_project/params"
 )
 
 func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +32,7 @@ func (t TaskStore) getTask(w http.ResponseWriter, r *http.Request) {
 		//если в поиске дата
 		if errParse == nil {
 			rows, err = t.db.Query("SELECT * FROM scheduler WHERE date = :searchString LIMIT :limit",
-				sql.Named("searchString", searchDate.Format("20060102")),
+				sql.Named("searchString", searchDate.Format(params.DFormat)),
 				sql.Named("limit", limit))
 			//если в поиске НЕ дата
 		} else {

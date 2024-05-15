@@ -23,7 +23,8 @@ func DbExistance() error {
 			return fmt.Errorf("ошибка создания новой базы: %w", err)
 		}
 	}
-	return fmt.Errorf("база данных уже существует")
+	log.Println("Успешное подключение к БД")
+	return nil
 }
 
 func dbCreate(dbFile string) error {
@@ -46,6 +47,5 @@ func dbCreate(dbFile string) error {
 	if err != nil {
 		return fmt.Errorf("ошибка при создании индекса dateindex в БД: %w", err)
 	}
-
 	return nil
 }

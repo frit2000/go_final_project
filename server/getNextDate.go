@@ -1,4 +1,4 @@
-package httpServer
+package server
 
 import (
 	"log"
@@ -6,12 +6,13 @@ import (
 	"time"
 
 	"github.com/frit2000/go_final_project/nextdate"
+	"github.com/frit2000/go_final_project/params"
 )
 
 func getNextDate(w http.ResponseWriter, r *http.Request) {
 	//получаем параметры из запроса и переводим now в формат времени
 	nowInString := r.FormValue("now")
-	now, err := time.Parse("20060102", nowInString)
+	now, err := time.Parse(params.DFormat, nowInString)
 	if err != nil {
 		log.Println("ошибка парсинга формата заданной даты:", err)
 	}

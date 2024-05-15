@@ -5,7 +5,7 @@ import (
 
 	"github.com/frit2000/go_final_project/db"
 	"github.com/frit2000/go_final_project/env"
-	"github.com/frit2000/go_final_project/httpServer"
+	"github.com/frit2000/go_final_project/server"
 )
 
 func main() {
@@ -13,8 +13,8 @@ func main() {
 
 	err := db.DbExistance()
 	if err != nil {
-		log.Println("При подключении к базе:", err)
+		log.Println("Ошибка при подключении к базе:", err)
+		return
 	}
-
-	httpServer.StartWebServer()
+	server.StartWebServer()
 }

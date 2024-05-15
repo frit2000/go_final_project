@@ -1,10 +1,11 @@
-package httpServer
+package server
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/frit2000/go_final_project/nextdate"
+	"github.com/frit2000/go_final_project/params"
 )
 
 func checkFieldsTask(task *Task) error {
@@ -13,21 +14,21 @@ func checkFieldsTask(task *Task) error {
 	}
 
 	if task.Date == "" {
-		task.Date = time.Now().Format("20060102")
+		task.Date = time.Now().Format(params.DFormat)
 		return nil
 	}
-	_, err := time.Parse("20060102", task.Date)
+	_, err := time.Parse(params.DFormat, task.Date)
 	if err != nil {
 		return fmt.Errorf("дата неверного формата")
 	}
 
-	newDate := time.Now().Format("20060102")
+	newDate := time.Now().Format(params.DFormat)
 	err = nil
 	if task.Repeat != "" {
 		newDate, err = nextdate.NextDate(time.Now(), task.Date, task.Repeat)
 	}
 
-	if task.Date < time.Now().Format("20060102") {
+	if task.Date < time.Now().Format(params.DFormat) {
 		task.Date = newDate
 	}
 

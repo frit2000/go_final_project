@@ -1,4 +1,4 @@
-package httpServer
+package server
 
 import (
 	"database/sql"
