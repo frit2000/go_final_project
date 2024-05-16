@@ -1,15 +1,19 @@
-package server
+package api
 
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
+
+	"github.com/frit2000/go_final_project/serverservice"
+	"github.com/frit2000/go_final_project/servicetask"
 )
 
-func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
+func AddTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
-	var task Task
-	var respTaskAdd RespTaskError
+	var task servicetask.Task
+	var s serverservice.ServerService
 
 	// получаем данные из веб-интерфейса
 	_, err := buf.ReadFrom(r.Body)
@@ -23,11 +27,22 @@ func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	if err = s.ReqValidate(&task); err != nil {
+		//ttp.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
 	// // проверяем что все поля date и title в task валидные
 	// err = checkFieldsTask(&task)
 	// if err != nil {
 	// 	respTaskAdd.Err = "ошибка в формате поля date или title"
 	// }
+
+	err = s.Server.Add(&task)
+	if err != nil {
+		//http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
 
 	// //записываем поля структуры task в БД
 	// res, err := t.db.Exec("INSERT INTO scheduler (date, title, comment, repeat) VALUES (:date, :title, :comment, :repeat)",
@@ -47,15 +62,16 @@ func (t TaskStore) addTask(w http.ResponseWriter, r *http.Request) {
 	// }
 	// respTaskAdd.Id = strconv.Itoa(int(lastID))
 
-	resp, err := json.Marshal(&respTaskAdd)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err = w.Write(resp); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	s.Response(task, w)
+	// resp, err := json.Marshal(&respTaskAdd)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	// w.WriteHeader(http.StatusOK)
+	// if _, err = w.Write(resp); err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 }

@@ -1,18 +1,19 @@
-package server
+package api
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/frit2000/go_final_project/serverservice"
+	"github.com/frit2000/go_final_project/servicetask"
 )
 
-func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
+func UpdTask(w http.ResponseWriter, r *http.Request) {
 	var buf bytes.Buffer
-	var task Task
-	var respTaskAdd RespTaskError
-	var count int
+	var task servicetask.Task
+	var s serverservice.ServerService
 
 	// получаем данные из веб-интерфейса
 	_, err := buf.ReadFrom(r.Body)
@@ -26,12 +27,21 @@ func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	// проверяем что все поля date и title в task валидные
-	err = checkFieldsTask(&task)
-	if err != nil {
-		respTaskAdd.Err = "ошибка в формате поля date или title"
-	}
 
+	if err = s.ReqValidate(&task); err != nil {
+		//ttp.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
+	// // проверяем что все поля date и title в task валидные
+	// err = checkFieldsTask(&task)
+	// if err != nil {
+	// 	respTaskAdd.Err = "ошибка в формате поля date или title"
+	// }
+
+	if err = s.Server.Update(&task); err != nil {
+		//ttp.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
 	// //проверяем, есть ли такой ID задачи
 	// err = t.db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
 	// if err != nil {
@@ -53,14 +63,15 @@ func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 
 	//	rowsAffected, err := result.RowsAffected()
 
-	resp, err := json.Marshal(&respTaskAdd)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err = w.Write(resp); err != nil {
-		log.Println("Не удалось записать данные в html:", err)
-		return
-	}
+	s.Response(task, w)
+	// resp, err := json.Marshal(&respTaskAdd)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// }
+	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	// w.WriteHeader(http.StatusOK)
+	// if _, err = w.Write(resp); err != nil {
+	// 	log.Println("Не удалось записать данные в html:", err)
+	// 	return
+	// }
 }

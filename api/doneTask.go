@@ -1,16 +1,27 @@
-package server
+package api
 
 import (
-	"encoding/json"
+	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/frit2000/go_final_project/serverservice"
 )
 
-func (t TaskStore) doneTask(w http.ResponseWriter, r *http.Request) {
-	var task Task
-	var respTask RespTaskError
+func DoneTask(w http.ResponseWriter, r *http.Request) {
+	var s serverservice.ServerService
 
-	id := r.FormValue("id")
+	id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil {
+		//ttp.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
 
+	task, err := s.Server.Done(id)
+	if err != nil {
+		//ttp.Error(w, err.Error(), http.StatusBadRequest)
+		log.Print("Ошибка валидации запроса:", err)
+	}
 	// err := t.db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	// if err != nil {
 	// 	log.Println("ошибка чтении данных по id:", err)
@@ -39,14 +50,15 @@ func (t TaskStore) doneTask(w http.ResponseWriter, r *http.Request) {
 	// 	}
 	// }
 
-	resp, err := json.Marshal(&respTask)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err = w.Write(resp); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	s.Response(task, w)
+	// resp, err := json.Marshal(&respTask)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// }
+	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	// w.WriteHeader(http.StatusOK)
+	// if _, err = w.Write(resp); err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 }

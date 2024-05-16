@@ -3,13 +3,15 @@ package servicetask
 import "database/sql"
 
 type TaskStore struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 type Task struct {
 	Id      string `json:"id,omitempty"`
-	Date    string `json:"date"`
-	Title   string `json:"title"`
-	Comment string `json:"comment"`
+	Date    string `json:"date,omitempty"`
+	Title   string `json:"title,omitempty"`
+	Comment string `json:"comment,omitempty"`
 	Repeat  string `json:"repeat,omitempty"`
+	IdErr   string `json:"iderr,omitempty"`
+	Err     string `json:"error,omitempty"`
 }

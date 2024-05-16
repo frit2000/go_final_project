@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 	"github.com/frit2000/go_final_project/params"
 )
 
-func getNextDate(w http.ResponseWriter, r *http.Request) {
+func GetNextDate(w http.ResponseWriter, r *http.Request) {
 	//получаем параметры из запроса и переводим now в формат времени
 	nowInString := r.FormValue("now")
 	now, err := time.Parse(params.DFormat, nowInString)

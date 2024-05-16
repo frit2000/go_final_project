@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"bytes"
@@ -11,11 +11,20 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+type AuthPass struct {
+	Pass string `json:"password"`
+}
+
+type AuthPassError struct {
+	MyTocken string `json:"token,omitempty"`
+	Err      string `json:"error,omitempty"`
+}
+
 var AuthResult AuthPassError
 var buf bytes.Buffer
 var auth AuthPass
 
-func checkPass(w http.ResponseWriter, r *http.Request) {
+func CheckPass(w http.ResponseWriter, r *http.Request) {
 
 	//получить данные от запроса
 	_, err := buf.ReadFrom(r.Body)
