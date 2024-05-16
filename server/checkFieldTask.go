@@ -6,9 +6,10 @@ import (
 
 	"github.com/frit2000/go_final_project/nextdate"
 	"github.com/frit2000/go_final_project/params"
+	"github.com/frit2000/go_final_project/servicetask"
 )
 
-func checkFieldsTask(task *Task) error {
+func checkFieldsTask(task *servicetask.Task) error {
 	if task.Title == "" {
 		return fmt.Errorf("не указан заголовок задачи")
 	}

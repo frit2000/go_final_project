@@ -32,24 +32,24 @@ func (t TaskStore) updTask(w http.ResponseWriter, r *http.Request) {
 		respTaskAdd.Err = "ошибка в формате поля date или title"
 	}
 
-	//проверяем, есть ли такой ID задачи
-	err = t.db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
-	if err != nil {
-		log.Println("ошибка чтении данных из БД:", err)
-	}
-	if count == 0 {
-		respTaskAdd.Err = "задача не найдена"
-	}
-	//обновляем поля структуры task в БД
-	_, err = t.db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
-		sql.Named("date", task.Date),
-		sql.Named("title", task.Title),
-		sql.Named("comment", task.Comment),
-		sql.Named("repeat", task.Repeat),
-		sql.Named("id", task.Id))
-	if err != nil {
-		log.Println("ошибка при обновлении записи БД:", err)
-	}
+	// //проверяем, есть ли такой ID задачи
+	// err = t.db.QueryRow("SELECT COUNT (*) FROM scheduler WHERE id = :id", sql.Named("id", task.Id)).Scan(&count)
+	// if err != nil {
+	// 	log.Println("ошибка чтении данных из БД:", err)
+	// }
+	// if count == 0 {
+	// 	respTaskAdd.Err = "задача не найдена"
+	// }
+	// //обновляем поля структуры task в БД
+	// _, err = t.db.Exec("UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id",
+	// 	sql.Named("date", task.Date),
+	// 	sql.Named("title", task.Title),
+	// 	sql.Named("comment", task.Comment),
+	// 	sql.Named("repeat", task.Repeat),
+	// 	sql.Named("id", task.Id))
+	// if err != nil {
+	// 	log.Println("ошибка при обновлении записи БД:", err)
+	// }
 
 	//	rowsAffected, err := result.RowsAffected()
 
