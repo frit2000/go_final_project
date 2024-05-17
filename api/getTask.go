@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -19,9 +18,7 @@ func (srv Server) GetTask(w http.ResponseWriter, r *http.Request) {
 	//если НЕ нажат поиск, то выбираем все записи
 	case "":
 		tasks, tr, err = srv.Server.SrvService.GetAll()
-		if err != nil {
-			log.Println(err)
-		}
+		checkErr(err)
 
 	//если нажат поиск, то выбираем записи согласно строке поиска
 	default:
@@ -29,16 +26,12 @@ func (srv Server) GetTask(w http.ResponseWriter, r *http.Request) {
 		//если в поиске дата
 		if errParse == nil {
 			tasks, err = srv.Server.SrvService.GetSearchDate(searchDate)
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
 
 			//если в поиске НЕ дата
 		} else {
 			tasks, err = srv.Server.SrvService.GetSearch(searchString)
-			if err != nil {
-				log.Println(err)
-			}
+			checkErr(err)
 		}
 	}
 

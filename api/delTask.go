@@ -1,20 +1,15 @@
 package api
 
 import (
-	"log"
 	"net/http"
-	"strconv"
 )
 
 func (srv Server) DelTask(w http.ResponseWriter, r *http.Request) {
 
-	id := r.FormValue("id")
-	idInt, _ := strconv.Atoi(id)
+	id := srv.Server.RequestId(r)
 
-	tr, err := srv.Server.SrvService.Delete(idInt)
-	if err != nil {
-		log.Println(err)
-	}
+	tr, err := srv.Server.SrvService.Delete(id)
+	checkErr(err)
 
 	srv.Server.Response(tr, w)
 

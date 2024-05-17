@@ -3,7 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -24,45 +24,32 @@ var AuthResult AuthPassError
 var buf bytes.Buffer
 var auth AuthPass
 
-func CheckPass(w http.ResponseWriter, r *http.Request) {
-
+func (srv Server) CheckPass(w http.ResponseWriter, r *http.Request) {
 	//получить данные от запроса
 	_, err := buf.ReadFrom(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	checkErr(err)
 
 	//переводим данные в стркутуру auth
 	if err = json.Unmarshal(buf.Bytes(), &auth); err != nil {
+		fmt.Println("ошибка десериализации")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	//проверить на совпадение TODO_PASSWORD и тела запроса
 	if auth.Pass == os.Getenv("TODO_PASSWORD") {
 		//сформировать jwt токен
 		secret := []byte(auth.Pass)
 		jwtToken := jwt.New(jwt.SigningMethodHS256)
 		AuthResult.MyTocken, err = jwtToken.SignedString(secret)
-		if err != nil {
-			log.Printf("failed to sign jwt: %s\n", err)
-		}
+		//fmt.Println("token=", AuthResult.MyTocken)
+		checkErr(err)
+
 	} else {
 		AuthResult.Err = "Неверный пароль"
 	}
 
 	//возвратить токен в поле tocken или ошибку
-	resp, err := json.Marshal(&AuthResult)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(resp)
-	if err != nil {
-		log.Println("Не удалось записать данные в html:", err)
-	}
+	srv.Server.Response(AuthResult, w)
 
 }
 
