@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/frit2000/go_final_project/servicetask"
@@ -16,19 +17,17 @@ func (srv Server) AddTask(w http.ResponseWriter, r *http.Request) {
 	// получаем данные из веб-интерфейса
 	_, err := buf.ReadFrom(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		log.Println(err)
 	}
 
 	//переводим данные в стркутуру task
 	if err = json.Unmarshal(buf.Bytes(), &task); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		log.Println(err)
 	}
 
-	tr, err = srv.Server.ReqValidate(task)
+	tr, err = srv.Server.ReqValidate(&task)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
 
 	}
 
@@ -39,10 +38,9 @@ func (srv Server) AddTask(w http.ResponseWriter, r *http.Request) {
 
 	tr, err = srv.Server.SrvService.Add(&task)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
 	}
 
-	w.WriteHeader(http.StatusOK)
 	srv.Server.Response(tr, w)
 
 }

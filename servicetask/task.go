@@ -46,14 +46,9 @@ func (ts TaskStore) GetOneTask(id int) (Task, TaskResp, error) {
 	var tr TaskResp
 	err := ts.Db.QueryRow("SELECT * FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&task.Id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
-		return Task{}, TaskResp{}, fmt.Errorf("ошибка чтении данных по id: %w", err)
-	}
-
-	//проверяем, есть ли такой ID задачи
-	if len(task.Id) == 0 {
 		tr.Err = "Ошибка, нет такого ID"
+		return Task{}, tr, fmt.Errorf("ошибка чтении данных по id: %w", err)
 	}
-
 	return task, tr, nil
 }
 
@@ -138,24 +133,15 @@ func (ts TaskStore) Delete(id int) (TaskResp, error) {
 	var tr = TaskResp{}
 	var checkedID string
 
-	fmt.Println("id=", id)
 	err := ts.Db.QueryRow("SELECT id FROM scheduler WHERE id = :id", sql.Named("id", id)).Scan(&checkedID)
 	if err != nil {
 		tr.Err = "Ошибка, нет такого ID"
 		return tr, fmt.Errorf("ошибка чтении данных по id: %w", err)
 	}
-
-	//проверяем, есть ли такой ID задачи
-	// if len(checkedID) == 0 {
-	// 	tr.Err = "Ошибка, нет такого ID"
-	// 	fmt.Println("ПОПАЛИ В ОШИБКУ ПРИ УДАЛЕНИИ")
-	// }
-
 	_, err = ts.Db.Exec("DELETE FROM scheduler WHERE id = :id", sql.Named("id", id))
 	if err != nil {
 		return TaskResp{}, fmt.Errorf("ошибка при обновлении записи БД: %w", err)
 	}
-	fmt.Println("ХОТЯ БЫ ОДНО УСПЕШНОЕ УДАЛЕНИЕ")
 	return tr, nil
 }
 
@@ -170,7 +156,7 @@ func (ts TaskStore) Done(id int) (TaskResp, error) {
 	}
 
 	//проверяем, есть ли такой ID задачи
-	if len(tr.Id) == 0 {
+	if len(task.Id) == 0 {
 		tr.Err = "Ошибка, нет такого ID"
 	}
 

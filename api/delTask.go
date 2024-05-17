@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -9,19 +9,13 @@ import (
 func (srv Server) DelTask(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
-	fmt.Println("id from html=", id)
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
-	}
+	idInt, _ := strconv.Atoi(id)
 
 	tr, err := srv.Server.SrvService.Delete(idInt)
 	if err != nil {
-		fmt.Println("ошибка при удалении:", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
+		log.Println(err)
 	}
+
 	srv.Server.Response(tr, w)
 
 }

@@ -1,21 +1,18 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func (srv Server) GetOneTask(w http.ResponseWriter, r *http.Request) {
 
-	id, err := strconv.Atoi(r.FormValue("id"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-
-	}
+	id, _ := strconv.Atoi(r.FormValue("id"))
 
 	task, tr, err := srv.Server.SrvService.GetOneTask(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
 	}
 
 	if tr.Err != "" {
